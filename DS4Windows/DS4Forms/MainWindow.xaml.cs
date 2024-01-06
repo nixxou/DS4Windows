@@ -804,6 +804,37 @@ Suspend support not enabled.", true);
             // Log exceptions that might occur
             Util.LogAssistBackgroundTask(serviceTask);
             await serviceTask;
+		}
+
+        private async void Restart()
+		{
+            bool needrestart = false;
+			StartStopBtn.IsEnabled = false;
+			App root = Application.Current as App;
+			//Tester service = root.rootHubtest;
+			ControlService service = App.rootHub;
+			if (service.running) needrestart = true;
+			Task serviceTask = Task.Run(() => 
+            {
+                if (service.running)
+                    service.Stop(immediateUnplug: true);
+                else
+                    service.Start();
+            });
+
+			// Log exceptions that might occur
+			Util.LogAssistBackgroundTask(serviceTask);
+			await serviceTask;
+            if(needrestart)
+            {
+				serviceTask = Task.Run(() =>
+				{
+					service.Start();
+				});
+            }
+            // Log exceptions that might occur
+            Util.LogAssistBackgroundTask(serviceTask);
+            await serviceTask;
         }
 
         private void LogListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -1121,12 +1152,18 @@ Suspend support not enabled.", true);
                                 }
                                 else if ((strData[0] == "loadprofile" || strData[0] == "loadtempprofile") && strData.Length >= 3)
                                 {
+                                    bool needrestart = false;
                                     // Command syntax: LoadProfile.device#.profileName (fex LoadProfile.1.GameSnake or LoadTempProfile.1.WebBrowserSet)
                                     if (int.TryParse(strData[1], out tdevice)) tdevice--;
 
                                     if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT &&
                                             File.Exists(Global.appdatapath + "\\Profiles\\" + strData[2] + ".xml"))
                                     {
+
+                                        if (!conLvViewModel.ControllerCol[tdevice].SelectedProfile.ToLower().Contains("lag") && strData[2].ToLower().Contains("lag"))
+                                        {
+                                            needrestart = true;
+                                        }
                                         if (strData[0] == "loadprofile")
                                         {
                                             int idx = profileListHolder.ProfileListCol.Select((item, index) => new { item, index }).
@@ -1164,7 +1201,9 @@ Suspend support not enabled.", true);
                                             string prolog = string.Format(Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");
                                             Program.rootHub.LogDebug(prolog);
                                         }
-                                    }
+                                        if (needrestart) Restart();
+
+									}
                                 }
                                 else if (strData[0] == "outputslot" && strData.Length >= 3)
                                 {
