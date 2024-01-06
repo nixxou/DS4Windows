@@ -21,6 +21,7 @@ using System.Drawing;
 using static System.Math;
 using static DS4Windows.Global;
 using System.Diagnostics;
+using System.Windows;
 
 namespace DS4Windows
 {
@@ -118,8 +119,48 @@ namespace DS4Windows
                     {
                         ref DS4Color fullColor = ref lightModeInfo.m_Led; //ref getMainColor(deviceNum);
                         ref DS4Color lowColor = ref lightModeInfo.m_LowLed; //ref getLowColor(deviceNum);
-                        color = getTransitionedColor(ref lowColor, ref fullColor, device.getBattery());
-                    }
+
+                        DS4Color newColor = getMainColor(deviceNum);
+						if (XinputSlotState.slots.ContainsKey(deviceNum))
+                        {
+							int slotValue = XinputSlotState.slots[deviceNum];
+
+							switch (slotValue)
+							{
+								case 1:
+									newColor = new DS4Color { red = 255, green = 0, blue = 0 };
+									break;
+								case 2:
+									newColor = new DS4Color { red = 0, green = 0, blue = 255 };
+									break;
+								case 3:
+									newColor = new DS4Color { red = 0, green = 255, blue = 0 };
+									break;
+								case 4:
+									newColor = new DS4Color { red = 255, green = 0, blue = 255 };
+									break;
+								case 5:
+									newColor = new DS4Color { red = 255, green = 255, blue = 0 };
+									break;
+								case 6:
+									newColor = new DS4Color { red = 255, green = 150, blue = 0 };
+									break;
+								case 7:
+									newColor = new DS4Color { red = 0, green = 255, blue = 255 };
+									break;
+								case 8:
+									newColor = new DS4Color { red = 150, green = 150, blue = 150 };
+									break;
+								// Add more cases if needed
+								default:
+									// Handle the default case if necessary
+									break;
+							}
+						}
+
+                        color = newColor;
+
+					}
                     else
                     {
                         color = getMainColor(deviceNum);
