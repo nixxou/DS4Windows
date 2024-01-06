@@ -1155,55 +1155,114 @@ Suspend support not enabled.", true);
                                     bool needrestart = false;
                                     // Command syntax: LoadProfile.device#.profileName (fex LoadProfile.1.GameSnake or LoadTempProfile.1.WebBrowserSet)
                                     if (int.TryParse(strData[1], out tdevice)) tdevice--;
-
-                                    if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT &&
-                                            File.Exists(Global.appdatapath + "\\Profiles\\" + strData[2] + ".xml"))
+                                    if(tdevice < 0)
                                     {
+										needrestart = false;
+                                        for (int i = 0; i < conLvViewModel.ControllerCol.Count; i++)
+                                        {
+											tdevice = i;
+											if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT &&
+													File.Exists(Global.appdatapath + "\\Profiles\\" + strData[2] + ".xml"))
+											{
 
-                                        if (!conLvViewModel.ControllerCol[tdevice].SelectedProfile.ToLower().Contains("lag") && strData[2].ToLower().Contains("lag"))
-                                        {
-                                            needrestart = true;
-                                        }
-                                        if (strData[0] == "loadprofile")
-                                        {
-                                            int idx = profileListHolder.ProfileListCol.Select((item, index) => new { item, index }).
-                                                    Where(x => x.item.Name == strData[2]).Select(x => x.index).DefaultIfEmpty(-1).First();
+												if (!conLvViewModel.ControllerCol[tdevice].SelectedProfile.ToLower().Contains("lag") && strData[2].ToLower().Contains("lag"))
+												{
+													needrestart = true;
+												}
+												if (strData[0] == "loadprofile")
+												{
+													int idx = profileListHolder.ProfileListCol.Select((item, index) => new { item, index }).
+															Where(x => x.item.Name == strData[2]).Select(x => x.index).DefaultIfEmpty(-1).First();
 
-                                            if (idx >= 0 && tdevice < conLvViewModel.ControllerCol.Count)
-                                            {
-                                                conLvViewModel.ControllerCol[tdevice].ChangeSelectedProfile(strData[2]);
-                                            }
-                                            else
-                                            {
-                                                // Preset profile name for later loading
-                                                Global.ProfilePath[tdevice] = strData[2];
-                                                //Global.LoadProfile(tdevice, true, Program.rootHub);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Task.Run(() =>
-                                            {
-                                                DS4Device device = conLvViewModel.ControllerCol[tdevice].Device;
-                                                if (device != null)
-                                                {
-                                                    device.HaltReportingRunAction(() =>
-                                                    {
-                                                        Global.LoadTempProfile(tdevice, strData[2], true, Program.rootHub);
-                                                    });
-                                                }
-                                            }).Wait();
-                                        }
+													if (idx >= 0 && tdevice < conLvViewModel.ControllerCol.Count)
+													{
+														conLvViewModel.ControllerCol[tdevice].ChangeSelectedProfile(strData[2]);
+													}
+													else
+													{
+														// Preset profile name for later loading
+														Global.ProfilePath[tdevice] = strData[2];
+														//Global.LoadProfile(tdevice, true, Program.rootHub);
+													}
+												}
+												else
+												{
+													Task.Run(() =>
+													{
+														DS4Device device = conLvViewModel.ControllerCol[tdevice].Device;
+														if (device != null)
+														{
+															device.HaltReportingRunAction(() =>
+															{
+																Global.LoadTempProfile(tdevice, strData[2], true, Program.rootHub);
+															});
+														}
+													}).Wait();
+												}
 
-                                        DS4Device device = conLvViewModel.ControllerCol[tdevice].Device;
-                                        if (device != null)
-                                        {
-                                            string prolog = string.Format(Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");
-                                            Program.rootHub.LogDebug(prolog);
-                                        }
+												DS4Device device = conLvViewModel.ControllerCol[tdevice].Device;
+												if (device != null)
+												{
+													string prolog = string.Format(Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");
+													Program.rootHub.LogDebug(prolog);
+												}
+
+											}
+										}
                                         if (needrestart) Restart();
+                                    }
+                                    else
+                                    {
+										if (tdevice >= 0 && tdevice < ControlService.MAX_DS4_CONTROLLER_COUNT &&
+												File.Exists(Global.appdatapath + "\\Profiles\\" + strData[2] + ".xml"))
+										{
 
+											if (!conLvViewModel.ControllerCol[tdevice].SelectedProfile.ToLower().Contains("lag") && strData[2].ToLower().Contains("lag"))
+											{
+												needrestart = true;
+											}
+											if (strData[0] == "loadprofile")
+											{
+												int idx = profileListHolder.ProfileListCol.Select((item, index) => new { item, index }).
+														Where(x => x.item.Name == strData[2]).Select(x => x.index).DefaultIfEmpty(-1).First();
+
+												if (idx >= 0 && tdevice < conLvViewModel.ControllerCol.Count)
+												{
+													conLvViewModel.ControllerCol[tdevice].ChangeSelectedProfile(strData[2]);
+												}
+												else
+												{
+													// Preset profile name for later loading
+													Global.ProfilePath[tdevice] = strData[2];
+													//Global.LoadProfile(tdevice, true, Program.rootHub);
+												}
+											}
+											else
+											{
+												Task.Run(() =>
+												{
+													DS4Device device = conLvViewModel.ControllerCol[tdevice].Device;
+													if (device != null)
+													{
+														device.HaltReportingRunAction(() =>
+														{
+															Global.LoadTempProfile(tdevice, strData[2], true, Program.rootHub);
+														});
+													}
+												}).Wait();
+											}
+
+											DS4Device device = conLvViewModel.ControllerCol[tdevice].Device;
+											if (device != null)
+											{
+												string prolog = string.Format(Properties.Resources.UsingProfile, (tdevice + 1).ToString(), strData[2], $"{device.Battery}");
+												Program.rootHub.LogDebug(prolog);
+											}
+											if (needrestart) Restart();
+
+										}
 									}
+
                                 }
                                 else if (strData[0] == "outputslot" && strData.Length >= 3)
                                 {
