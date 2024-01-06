@@ -180,7 +180,12 @@ namespace DS4Windows
                     {
                         var tempXbox = outputDevice as Xbox360OutDevice;
                         AppLogger.LogToGui($"Plugging in virtual X360 controller (XInput slot #{(tempXbox.XinputSlotNum < 0 ? "?" : tempXbox.XinputSlotNum + 1 )}) in output slot #{slot + 1}", false);
-                    }
+						if (tempXbox.XinputSlotNum >= 0)
+						{
+							if (XinputSlotState.slots.ContainsKey(slot)) XinputSlotState.slots[slot] = tempXbox.XinputSlotNum + 1;
+							else XinputSlotState.slots.Add(slot, tempXbox.XinputSlotNum + 1);
+						}
+					}
                     else
                     {
                         AppLogger.LogToGui($"Plugging in virtual {contType} Controller in output slot #{slot + 1}",false);
@@ -230,12 +235,13 @@ namespace DS4Windows
                     outputSlots[slot].DetachDevice();
                     SlotUnassigned?.Invoke(this, slot, outputSlots[slot]);
                     AppLogger.LogToGui($"Unplugging virtual {outputDevice.GetDeviceType()} Controller from output slot #{slot + 1}",false);
+					if (XinputSlotState.slots.ContainsKey(slot)) XinputSlotState.slots.Remove(slot);
 
-                    //if (!immediate)
-                    //{
-                    //    Task.Delay(DELAY_TIME).Wait();
-                    //}
-                }
+					//if (!immediate)
+					//{
+					//    Task.Delay(DELAY_TIME).Wait();
+					//}
+				}
             };
 
             //queuedTasks--;

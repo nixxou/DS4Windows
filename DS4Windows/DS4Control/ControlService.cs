@@ -1881,7 +1881,9 @@ namespace DS4Windows
                     ChangeUDPStatus(false);
                 }
 
-                if (showlog)
+				XinputSlotState.slots.Clear();
+
+				if (showlog)
                     LogDebug(DS4WinWPF.Properties.Resources.StoppedDS4Windows);
 
                 while (outputslotMan.RunningQueue)
