@@ -1091,7 +1091,7 @@ namespace DS4Windows
         {
             int devIndex = index;
 
-            if (contType == OutContType.X360)
+            if (contType == OutContType.X360 || contType == OutContType.X360Compat)
             {
                 Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
                 Nefarius.ViGEm.Client.Targets.Xbox360FeedbackReceivedEventHandler p = (sender, args) =>
@@ -1310,7 +1310,7 @@ namespace DS4Windows
 
         public void RemoveOutFeedback(OutContType contType, OutputDevice outDevice, int inIdx)
         {
-            if (contType == OutContType.X360)
+            if (contType == OutContType.X360 || contType == OutContType.X360Compat)
             {
                 Xbox360OutDevice tempXbox = outDevice as Xbox360OutDevice;
                 tempXbox.RemoveFeedback(inIdx);
@@ -1376,16 +1376,16 @@ namespace DS4Windows
             if (useDInputOnly[index])
             {
                 bool success = false;
-                if (contType == OutContType.X360)
+                if (contType == OutContType.X360 || contType == OutContType.X360Compat)
                 {
-                    activeOutDevType[index] = OutContType.X360;
+                    activeOutDevType[index] = contType;
 
                     if (slotDevice == null)
                     {
                         slotDevice = outputslotMan.FindOpenSlot();
                         if (slotDevice != null)
                         {
-                            Xbox360OutDevice tempXbox = EstablishOutDevice(index, OutContType.X360)
+                            Xbox360OutDevice tempXbox = EstablishOutDevice(index, contType)
                             as Xbox360OutDevice;
                             //outputDevices[index] = tempXbox;
                             

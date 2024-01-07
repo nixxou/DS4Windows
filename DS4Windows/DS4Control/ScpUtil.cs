@@ -54,7 +54,7 @@ namespace DS4Windows
     public enum X360Controls : byte { None, LXNeg, LXPos, LYNeg, LYPos, RXNeg, RXPos, RYNeg, RYPos, LB, LT, LS, RB, RT, RS, X, Y, B, A, DpadUp, DpadRight, DpadDown, DpadLeft, Guide, Back, Start, TouchpadClick, LeftMouse, RightMouse, MiddleMouse, FourthMouse, FifthMouse, WUP, WDOWN, MouseUp, MouseDown, MouseLeft, MouseRight, AbsMouseUp, AbsMouseDown, AbsMouseLeft, AbsMouseRight, Unbound };
 
     public enum SASteeringWheelEmulationAxisType: byte { None = 0, LX, LY, RX, RY, L2R2, VJoy1X, VJoy1Y, VJoy1Z, VJoy2X, VJoy2Y, VJoy2Z };
-    public enum OutContType : uint { None = 0, X360, DS4 }
+    public enum OutContType : uint { None = 0, X360, DS4, X360Compat }
 
     public enum GyroOutMode : uint
     {
@@ -792,7 +792,7 @@ namespace DS4Windows
         public static string getX360ControlString(X360Controls key, OutContType conType)
         {
             string result = string.Empty;
-            if (conType == DS4Windows.OutContType.X360)
+            if (conType == DS4Windows.OutContType.X360 || conType == DS4Windows.OutContType.X360Compat)
             {
                 xboxDefaultNames.TryGetValue(key, out result);
             }
@@ -3998,7 +3998,8 @@ namespace DS4Windows
                 case OutContType.None:
                 case OutContType.X360: result = "X360"; break;
                 case OutContType.DS4: result = "DS4"; break;
-                default: break;
+				case OutContType.X360Compat: result = "X360Compat"; break;
+				default: break;
             }
 
             return result;
@@ -4012,7 +4013,8 @@ namespace DS4Windows
                 case "None":
                 case "X360": id = OutContType.X360; break;
                 case "DS4": id = OutContType.DS4; break;
-                default: break;
+				case "X360Compat": id = OutContType.X360Compat; break;
+				default: break;
             }
 
             return id;

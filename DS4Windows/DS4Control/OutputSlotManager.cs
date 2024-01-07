@@ -127,7 +127,19 @@ namespace DS4Windows
                     }
 
                     break;
-                case OutContType.DS4:
+				case OutContType.X360Compat:
+					if (xinputSlotMinVersion.CompareTo(Global.vigemBusVersionInfo) <= 0)
+					{
+						outputDevice = new Xbox360OutDevice(client,
+							Xbox360OutDevice.X360Features.XInputSlotNum, 0x046d, 0xc21f);
+					}
+					else
+					{
+						outputDevice = new Xbox360OutDevice(client, 0x046d, 0xc21f);
+					}
+
+					break;
+				case OutContType.DS4:
                     outputDevice = DS4OutDeviceFactory.CreateDS4Device(client, Global.vigemBusVersionInfo);
                     break;
                 case OutContType.None:
@@ -176,7 +188,7 @@ namespace DS4Windows
                         return;
                     }
 
-                    if (contType == OutContType.X360)
+                    if (contType == OutContType.X360 || contType == OutContType.X360Compat)
                     {
                         var tempXbox = outputDevice as Xbox360OutDevice;
                         AppLogger.LogToGui($"Plugging in virtual X360 controller (XInput slot #{(tempXbox.XinputSlotNum < 0 ? "?" : tempXbox.XinputSlotNum + 1 )}) in output slot #{slot + 1}", false);

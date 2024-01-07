@@ -281,7 +281,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             {
                 bool result = false;
 
-                result = outSlotDevice.CurrentType == OutContType.X360 &&
+                result = (outSlotDevice.CurrentType == OutContType.X360 || outSlotDevice.CurrentType == OutContType.X360Compat) &&
                     (outSlotDevice.OutputDevice as Xbox360OutDevice).Features.HasFlag(Xbox360OutDevice.X360Features.XInputSlotNum);
 
                 return result;
@@ -294,7 +294,7 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             get
             {
                 var xinputSlot = "?";
-                if (outSlotDevice.CurrentType == OutContType.X360)
+                if (outSlotDevice.CurrentType == OutContType.X360 || outSlotDevice.CurrentType == OutContType.X360Compat)
                 {
                     var tempX360 = outSlotDevice.OutputDevice as Xbox360OutDevice;
                     if (tempX360.XinputSlotNum >= 0) xinputSlot = $"{tempX360.XinputSlotNum + 1}";
@@ -386,7 +386,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 case OutContType.DS4:
                     result = 2;
                     break;
-                default:
+				case OutContType.X360Compat:
+					result = 3;
+					break;
+				default:
                     break;
             }
             return result;
@@ -424,7 +427,10 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                 case 2:
                     result = OutContType.DS4;
                     break;
-                default:
+				case 3:
+					result = OutContType.X360Compat;
+					break;
+				default:
                     break;
             }
 

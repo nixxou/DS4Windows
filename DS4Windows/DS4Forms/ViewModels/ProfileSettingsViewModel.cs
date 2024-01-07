@@ -770,7 +770,11 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         type = 1;
                         break;
 
-                    default: break;
+					case OutContType.X360Compat:
+						type = 2;
+						break;
+
+					default: break;
                 }
 
                 return type;
@@ -798,7 +802,9 @@ namespace DS4WinWPF.DS4Forms.ViewModels
                         result = OutContType.X360; break;
                     case 1:
                         result = OutContType.DS4; break;
-                    default: result = OutContType.X360; break;
+					case 2:
+						result = OutContType.X360Compat; break;
+					default: result = OutContType.X360; break;
                 }
                 return result;
             }

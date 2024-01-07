@@ -63,7 +63,10 @@ namespace DS4WinWPF.DS4Forms
                 case 1:
                     contType = OutContType.DS4;
                     break;
-                default:
+				case 2:
+					contType = OutContType.X360Compat;
+					break;
+				default:
                     break;
             }
 

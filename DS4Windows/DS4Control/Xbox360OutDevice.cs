@@ -70,13 +70,25 @@ namespace DS4Windows
             cont.AutoSubmitReport = false;
         }
 
-        public Xbox360OutDevice(ViGEmClient client, X360Features features) :
+		public Xbox360OutDevice(ViGEmClient client, ushort vendorId, ushort productId)
+		{
+			cont = client.CreateXbox360Controller(vendorId,productId);
+			cont.AutoSubmitReport = false;
+		}
+
+		public Xbox360OutDevice(ViGEmClient client, X360Features features) :
             this(client)
         {
             this._features = features;
         }
 
-        public override void ConvertandSendReport(DS4State state, int device)
+		public Xbox360OutDevice(ViGEmClient client, X360Features features, ushort vendorId, ushort productId) :
+	        this(client,vendorId,productId)
+		{
+			this._features = features;
+		}
+
+		public override void ConvertandSendReport(DS4State state, int device)
         {
             if (!connected) return;
 
